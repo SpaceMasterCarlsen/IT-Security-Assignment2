@@ -1,0 +1,36 @@
+# LaTeX midlertidige filer
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.run.xml
+
+# PDF (hvis du ikke vil uploade den)
+*.pdf
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Python / minted cache
+__pycache__/
+.pygments/
+
+# Mac / Windows
+.DS_Store
+Thumbs.db
+
+# Overleaf sync (hvis du bruger det)
+.overleaf/

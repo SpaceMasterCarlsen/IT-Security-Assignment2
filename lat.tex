@@ -1,0 +1,115 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage[letterpaper, top=2cm, bottom=3cm, left=3cm, right=3cm, heightrounded]{geometry}
+
+\title{IT - Security, Mandatory II}
+\author{Rasmus Carlsen, Lucas Modin}
+\date{November 2025}
+
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1: SQL Injection (Software Security)}
+SQLI are a way to insert malicious query code in a input field in apps, so one can manipulate the app to show the data in the database or altering the database, eg. deleting the whole database or rows/columns, adversaries would maybe have some reason for altering.
+In the \href{www.portswigger.net}{Portswigger.net} under the learning path for academy and in the sql path, we can find information on the sql injection attacks.
+Here labs are provided for exercising sql attacks.
+
+\renewcommand{\thesubsection}{\Alph{subsection}}
+\subsection{Using the 'Union select NULL...' command}
+
+To use the 
+\begin{minted}{sql}
+    UNION SELECT NULL, NULL, NULL;
+\end{minted} 
+sql attack, we need to use the websites url for injection. Here we would go around the site to see what queries the website does normally, here we can see "web-security-academy.net/filter?category=Gifts" if we click on the Gifts category, now we know that if we can input ' in after the ?category=' and get internal server error that it is vulnerably to sql injections. We now only need to do: UNION SELECT NULL, NULL, NULL... until we get the number of rows/columns that is in the table. So the correct sql injection would be: \verb|?category=Gifts'+UNION+SELECT+NULL,+NULL,+NULL--|, now we know the number of columns/rows in the table, and we can now try to insert to see what datatype each row/column takes, here we try for strings and try with each NULL to set to eg. 'abc', for seing which takes a string:\\ \verb|?category=Gifts'+UNION+SELECT+'abc',+NULL,+NULL--|\\
+\verb|?category=Gifts'+UNION+SELECT+'NULL',+abc,+NULL--|\\
+\verb|?category=Gifts'+UNION+SELECT+'NULL',+NULL,+abc--|\\
+Pros with union is: that we know that that we can find the number of columns, we can find the specific datatype for each column, and we know that if it works that union is permitted.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=4.5cm]{pics/port1.png}
+    \caption{Websites main products site}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=4.5cm]{pics/port2.png}
+    \caption{After using UNION}
+  \end{minipage}
+\end{figure}
+
+\subsection{Using the 'Order by' command}
+To use the (n == number)
+\begin{minted}{sql}
+    ORDER BY n;
+\end{minted} 
+sql attack, we nned to use the websites url for injection as before. This time we would instead in the url type:\\
+\verb|category=Gifts'+ORDER+BY+1--|\\
+\verb|category=Gifts'+ORDER+BY+2--|\\
+\verb|category=Gifts'+ORDER+BY+3--|\\
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=4.5cm]{pics/port3.png}
+    \caption{Order by 2, for the string column(ascending alphabetically)}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=4.5cm]{pics/port4.png}
+    \caption{Order by 3, for the price column(ascending numerically)}
+  \end{minipage}
+\end{figure}
+
+\noindent Pros with order by, is that it is very fast to get a idea of how many columns the table has, instead of writing a bunch of NULL's in the union. Plus order by may not be restricted in the WAF\cite{cloudflareWAF}
+
+\subsection{Using 'ORDER BY' \& 'UNION' To retrive data from other tables}
+We will now use both methods to retrive data from another table, which is hidden in the database. First we will use the 'ORDER BY 2 ...' query to see how many colums that the table has, and after we would use the 'UNION select NULL, NULL' to see how many of the columns are string/varchar values.
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=4.5cm]{pics/port5.png}
+    \caption{Order by 2;}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=4.5cm]{pics/port6.png}
+    \caption{Union SELECT 'abc', 'abc';}
+  \end{minipage}
+\end{figure}
+\newpage
+\noindent We now know that the site is vulnerable to sql injections, with unions and we also now know the number of columns and which columns take strings as inputs.\\
+The lab gave us hints of what the other tables names was: \verb|users| \& that the column name was: \verb|username| \& \verb|password|.\\
+Now we will use this info combined with the knowledge that there is 2 colums, and we know we can use 'UNION' on the website.
+\begin{minted}{sql}
+    UNION SELECT username, password FROM users--;
+\end{minted}
+This sqli will show us the table users, where username and password are shown:
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=4.5cm]{pics/port7.png}
+    \caption{Using the UNION to get another tables dataimage}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=4.5cm]{pics/port8.png}
+    \caption{Logged successfully into the administrator account}
+  \end{minipage}
+\end{figure}
+
+\bibliographystyle{plain}
+\bibliography{quotes}
+\end{document}
