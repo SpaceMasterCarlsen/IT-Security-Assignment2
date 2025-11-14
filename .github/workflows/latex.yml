@@ -2,9 +2,9 @@ name: Build LaTeX PDF
 
 on:
   push:
-    branches: [ main ]
+    branches: [ lat ]
   pull_request:
-    branches: [ main ]
+    branches: [ lat ]
 
 jobs:
   build:
@@ -20,22 +20,22 @@ jobs:
 
       - name: Compile LaTeX
         run: |
-          pdflatex -interaction=nonstopmode main.tex
-          bibtex main || true
-          pdflatex -interaction=nonstopmode main.tex
-          pdflatex -interaction=nonstopmode main.tex
+          pdflatex -interaction=nonstopmode lat.tex
+          bibtex lat || true
+          pdflatex -interaction=nonstopmode lat.tex
+          pdflatex -interaction=nonstopmode lat.tex
 
       - name: Upload PDF
         uses: actions/upload-artifact@v4
         with:
           name: rapport
-          path: main.pdf
+          path: lat.pdf
 
-      - name: Create Release (kun ved push til main)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Create Release (kun ved push til lat)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/lat'
         uses: softprops/action-gh-release@v2
         with:
-          files: main.pdf
+          files: lat.pdf
           tag_name: pdf-v${{ github.run_number }}
           name: "PDF Build #${{ github.run_number }}"
           draft: false
