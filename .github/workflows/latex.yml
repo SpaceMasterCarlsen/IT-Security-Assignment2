@@ -2,9 +2,9 @@ name: Build LaTeX PDF
 
 on:
   push:
-    branches: [ lat ]
+    branches: [ main ]
   pull_request:
-    branches: [ lat ]
+    branches: [ main ]
 
 jobs:
   build:
