@@ -89,10 +89,14 @@ We will now use both methods to retrive data from another table, which is hidden
 \end{figure}
 \newpage
 \noindent We now know that the site is vulnerable to sql injections, with unions and we also now know the number of columns and which columns take strings as inputs.\\
-The lab gave us hints of what the other tables names was: \verb|users| \& that the column name was: \verb|username| \& \verb|password|.\\
-Now we will use this info combined with the knowledge that there is 2 colums, and we know we can use 'UNION' on the website.
+The lab gave us hints of what the other tables names was: \verb|users| \& that the columns names was: \verb|username| \& \verb|password|.\\
+Now we will use this combined info with the knowledge that there is 2 colums, and we know we can use 'UNION' on the website.
 \begin{minted}{sql}
     UNION SELECT username, password FROM users--;
+\end{minted}
+Now take a close look at the SQLI above and remember the union attack from earlier. You will see they look much alike, username and password are now what is inside the NULL, NULL, and we know another table called users, thats why we can use FROM users;
+\begin{minted}{sql}
+    UNION SELECT NULL, NULL--;  
 \end{minted}
 This sqli will show us the table users, where username and password are shown:
 \begin{figure}[htbp]
@@ -109,6 +113,33 @@ This sqli will show us the table users, where username and password are shown:
     \caption{Logged successfully into the administrator account}
   \end{minipage}
 \end{figure}
+\section{Problem 2. Hashing \& Password Storage (System Security)}
+Eve wants to alter Alices message to her boyfriend. 
+Since AloveB hash function is describe as vulnerable, she can than use a collision attack. 
+We can asume since the hash function is weak, it might be MD5 or Sha1.
+
+\subsection{What is the specific name of this attack? How can this data modification affect
+Alice and Bob's relationship?}
+The attack is known as a collision attack, by finding two different message that produces the same hash.
+This can be done by using a birthday attack, which states that two different inputs will eventually give the same output, breaking the collision resistence property.
+
+
+\subsection{What type of suggestions would you give to Alice and Bob to prevent this attack
+while using their hash function? (Any advice for more security using the same
+hash function?)}
+If using the same hash function, we recommend using a bigger output size hashing function eg. minimal sha-256 (32bytes). 
+We still highly recommend using a newer hash function like sha3 that is new standard.  
+We would also recommend Alice \& Bob to use salting, which is a method that produces a random string of charactors,
+that is concatenated with the original plantext message.
+Secondly Alice \& Bob could, if possible asymmatric cryptography by digitally signing the message with the private key.
+
+\subsection{Considering that Bob works as a system admin in a company, which type of
+functions (hash or KDF) would you suggest him to use while storing the
+employees' passwords in the database?}
+Firstly we newer recommend using standard hash function like Sha alone.
+We would recommend using KDF functions like Argon2, Bcrypt and Scrypt. These are designed specifically for storaging passwords securely.
+But they are slow, hardware heavy and thats makes them take longere to crack, and they are more resistant to brute force attack.
+
 
 \bibliographystyle{plain}
 \bibliography{quotes}
