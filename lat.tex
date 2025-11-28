@@ -121,7 +121,9 @@ We can asume since the hash function is weak, it might be MD5 or Sha1.
 \subsection{What is the specific name of this attack? How can this data modification affect
 Alice and Bob's relationship?}
 The attack is known as a collision attack, by finding two different message that produces the same hash.
+If eve can find a different message with an identical hash, she can replace the original message, without Bob detecting any changes.
 This can be done by using a birthday attack, which states that two different inputs will eventually give the same output, breaking the collision resistence property.
+This could impact Alice and Bobs relationship negatively, and resulting in integrity is broken.
 
 
 \subsection{What type of suggestions would you give to Alice and Bob to prevent this attack
@@ -129,15 +131,14 @@ while using their hash function? (Any advice for more security using the same
 hash function?)}
 If using the same hash function, we recommend using a bigger output size hashing function eg. minimal sha-256 (32bytes). 
 We still highly recommend using a newer hash function like sha3 that is new standard.  
-We would also recommend Alice \& Bob to use salting, which is a method that produces a random string of charactors,
-that is concatenated with the original plantext message.
+We would also recommend Alice \& Bob to use salting, to add random unpredictable data to the message before hashing. This will reduce collision feasibility.
 Secondly Alice \& Bob could, if possible asymmatric cryptography by digitally signing the message with the private key.
 
 \subsection{Considering that Bob works as a system admin in a company, which type of
 functions (hash or KDF) would you suggest him to use while storing the
 employees' passwords in the database?}
-Firstly we newer recommend using standard hash function like Sha alone.
-We would recommend using KDF functions like Argon2, Bcrypt and Scrypt. These are designed specifically for storaging passwords securely.
+Bob should not use regular hash functions like MD5, SHA-1 or SHA-256 for password storage.
+We would recommend using KDF functions like Argon2, Bcrypt and Scrypt. These are designed specifically for storing passwords securely.
 But they are slow, hardware heavy and thats makes them take longere to crack, and they are more resistant to brute force attack.
 
 
